@@ -276,8 +276,11 @@ FROM <cte-name>; -- A CTE final pode se referir às anteriores
 Views são consultas SQL salvas que atuam como tabelas virtuais. Quando uma view é consultada, a consulta subjacente é executada, e os resultados são apresentados como se viessem de uma tabela real.
 
 Views Regulares (Não Materializadas)
+
 Execução da Consulta: A consulta subjacente à view é executada cada vez que a view é chamada. Os resultados não são armazenados fisicamente no disco.
+
 Definição Nomeada: É essencialmente uma "definição nomeada" de uma consulta, que simplifica consultas complexas e promove a reutilização.
+
 Exemplo de Criação e Uso de View Regular:
 ``` SQL
 CREATE VIEW premium_books AS
