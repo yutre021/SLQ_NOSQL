@@ -375,10 +375,10 @@ SELECT * FROM ClientesAtivos WHERE data_cadastro > '2023-01-01';
 
 Uma View Materializada é semelhante a uma View regular, mas com uma diferença crucial: ela armazena os resultados da consulta fisicamente no disco.
 
-* **O que são e para que servem?
-* **Resultados Armazenados Fisicamente: Os dados resultantes da consulta da View são pré-calculados e armazenados como se fossem uma tabela real.
-* **Melhor Desempenho: Oferecem desempenho de consulta significativamente superior em comparação com Views regulares (e até mesmo consultas diretas em tabelas grandes), pois os dados já estão prontos para serem lidos. Isso é especialmente útil para relatórios e dashboards de Business Intelligence (BI) que são consultados frequentemente.
-* **Requerem Atualização: Como os dados são armazenados, eles precisam ser atualizados (refrescados) quando os dados das tabelas base mudam. O Snowflake gerencia essa atualização automaticamente, mas pode haver custos de computação associados a esse processo.
+* O que são e para que servem?
+* Resultados Armazenados Fisicamente: Os dados resultantes da consulta da View são pré-calculados e armazenados como se fossem uma tabela real.
+* Melhor Desempenho: Oferecem desempenho de consulta significativamente superior em comparação com Views regulares (e até mesmo consultas diretas em tabelas grandes), pois os dados já estão prontos para serem lidos. Isso é especialmente útil para relatórios e dashboards de Business Intelligence (BI) que são consultados frequentemente.
+* Requerem Atualização: Como os dados são armazenados, eles precisam ser atualizados (refrescados) quando os dados das tabelas base mudam. O Snowflake gerencia essa atualização automaticamente, mas pode haver custos de computação associados a esse processo.
 Exemplo:
 Criar uma View Materializada para um relatório de vendas diárias que é consultado várias vezes ao dia.
 ```SQL
