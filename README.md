@@ -182,3 +182,19 @@ Aqui demonstramos exemplos de uso correto e incorreto das técnicas de preenchim
     );
     ```
 
+## Microparticionamento e Clustering de Dados no Snowflake
+
+O Snowflake utiliza conceitos avançados de armazenamento e otimização para garantir alta performance, mesmo com grandes volumes de dados. Dois conceitos chave são o **Microparticionamento** e o **Agrupamento de Dados (Clustering)**.
+
+### Microparticionamento
+
+* **Definição:** As tabelas no Snowflake são automaticamente divididas em **micropartições**. Cada micropartição é um grupo de linhas de uma tabela maior, armazenada de forma otimizada em formato colunar.
+* **Metadados:** Cada micropartição contém metadados ricos (como intervalos de valores para cada coluna, contagens de valores distintos, etc.) que o Snowflake usa para otimizar as consultas.
+* **Otimização:** A existência das micropartições permite que o Snowflake realize a "poda de micropartições" (micro-partition pruning), lendo apenas os blocos de dados relevantes para uma consulta, o que reduz significativamente a quantidade de dados escaneados.
+
+### Agrupamento de Dados (Clustering)
+
+* **Objetivo:** O agrupamento de dados no Snowflake refere-se à organização e classificação das linhas dentro das micropartições. O objetivo principal é agrupar linhas com valores similares em colunas específicas (as "chaves de clustering") para que elas sejam armazenadas próximas umas das outras.
+* **Benefício:** Essa organização otimizada melhora drasticamente o desempenho das consultas. Quando uma consulta filtra dados com base nas chaves de clustering, o Snowflake pode usar os metadados das micropartições para "podar" (ignorar) rapidamente as micropartições que não contêm os dados relevantes, diminuindo a leitura de dados e acelerando a resposta da consulta.
+
+Esses mecanismos internos do Snowflake são fundamentais para sua capacidade de processar grandes cargas de trabalho analíticas com eficiência e escalabilidade.
