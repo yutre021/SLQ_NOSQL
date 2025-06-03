@@ -653,7 +653,7 @@ O PostgreSQL oferece suporte poderoso para dados semiestruturados através dos t
 Essa integração permite que o PostgreSQL seja uma solução versátil para aplicações que precisam lidar tanto com dados estritamente relacionais quanto com dados semiestruturados flexíveis.
 
 Exemplo de código:
-''' SQL
+``` SQL
 import pandas as pd
 import sqlalchemy
 
@@ -663,5 +663,4 @@ db_engine = sqlalchemy.create_engine("postgresql+psycopg2://repl:password@localh
 # Execute a query against the nested_reviews table
 results = pd.read_sql("SELECT * FROM nested_reviews;", db_engine)
 print(results)
-
-'''
+```
