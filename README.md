@@ -664,3 +664,36 @@ db_engine = sqlalchemy.create_engine("postgresql+psycopg2://repl:password@localh
 results = pd.read_sql("SELECT * FROM nested_reviews;", db_engine)
 print(results)
 ```
+
+## Inserindo e Copiando Registros JSON para o PostgreSQL
+
+O PostgreSQL oferece flexibilidade para adicionar dados a tabelas, seja inserindo registros individuais (inclusive com dados JSON) ou carregando grandes volumes de dados de arquivos.
+
+### 1. Inserindo Registros Individuais com Dados JSON (`INSERT INTO`)
+
+Você pode usar a instrução `INSERT INTO` para adicionar um único registro a uma tabela. Se uma das colunas for do tipo JSON ou JSONB, você pode passar a string JSON diretamente para essa coluna.
+
+**Exemplo:**
+
+```sql
+INSERT INTO students (school, age, address, parent_meta) VALUES (
+    'GP',
+    18,
+    'U',
+    '{"guardian": "mother", "P2": "at_home"}' -- Dados JSON como uma string
+);
+```
+Neste exemplo, a coluna parent_meta (provavelmente do tipo JSONB) está recebendo um objeto JSON como um valor de string.
+
+### 2. Populando Tabelas a partir de Arquivos (COPY FROM)
+Para carregar grandes volumes de dados de um arquivo (como CSV, que pode conter colunas JSON) para uma tabela PostgreSQL, o comando COPY FROM é a maneira mais eficiente e performática.
+
+Exemplo:
+
+``` SQL
+COPY students FROM 'students.csv' DELIMITER ',' CSV HEADER;
+```
+
+Este comando importa dados do arquivo *students.csv* para a tabela *students*. As opções *DELIMITER ','* especificam que as colunas são separadas por vírgula, e *CSV HEADER*  indica que a primeira linha do arquivo contém os nomes das colunas e deve ser ignorada como dados.
+
+O comando *COPY FROM* é fundamental para operações de ETL (Extração, Transformação, Carregamento) no PostgreSQL, especialmente quando se lida com conjuntos de dados volumosos.
