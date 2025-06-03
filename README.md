@@ -652,3 +652,16 @@ O PostgreSQL oferece suporte poderoso para dados semiestruturados através dos t
 
 Essa integração permite que o PostgreSQL seja uma solução versátil para aplicações que precisam lidar tanto com dados estritamente relacionais quanto com dados semiestruturados flexíveis.
 
+Exemplo de código:
+''' SQL
+import pandas as pd
+import sqlalchemy
+
+# Create a connection to the reviews database
+db_engine = sqlalchemy.create_engine("postgresql+psycopg2://repl:password@localhost:5432/disneyland")
+
+# Execute a query against the nested_reviews table
+results = pd.read_sql("SELECT * FROM nested_reviews;", db_engine)
+print(results)
+
+'''
