@@ -636,3 +636,19 @@ print(results)
 ```
 Este fluxo de trabalho permite que você aproveite as capacidades de dados semiestruturados do PostgreSQL, combinadas com a flexibilidade e poder de análise do Python e Pandas.
 
+
+## JSON e JSONB: Tipos de Dados Semiestruturados no PostgreSQL
+
+O PostgreSQL oferece suporte poderoso para dados semiestruturados através dos tipos de dados `JSON` e `JSONB`. Esses tipos permitem que você armazene e manipule documentos JSON diretamente dentro das colunas de suas tabelas, combinando a flexibilidade do NoSQL com a robustez e as capacidades relacionais do Postgres.
+
+### Vantagens e Capacidades Principais:
+
+* **Armazenamento Eficiente de JSON:** Os tipos `JSON` e `JSONB` são projetados especificamente para armazenar dados no formato JSON em uma coluna de uma tabela do Postgres. O `JSONB` (JSON Binário) é geralmente preferível, pois armazena os dados em um formato binário decomposto, o que o torna mais rápido para processamento e consulta.
+* **Rico Conjunto de Funções e Ferramentas:** O PostgreSQL vem equipado com uma vasta gama de funções e operadores internos que permitem aos usuários trabalhar de forma eficaz com dados no formato JSON. Isso inclui:
+    * **Extração de Valores:** Operadores como `->` e `->>` para extrair elementos por chave ou caminho.
+    * **Construção de JSON:** Funções para criar objetos e arrays JSON a partir de dados tabulares.
+    * **Transformação:** Ferramentas para converter JSON em linhas/colunas e vice-versa.
+    * **Indexação:** Capacidade de criar índices GIN em colunas JSONB para acelerar consultas sobre o conteúdo JSON.
+
+Essa integração permite que o PostgreSQL seja uma solução versátil para aplicações que precisam lidar tanto com dados estritamente relacionais quanto com dados semiestruturados flexíveis.
+
