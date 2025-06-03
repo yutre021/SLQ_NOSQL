@@ -215,3 +215,96 @@ SELECT
 FROM olympic_medals
 WHERE year >= 2000;
 ```
+# Common Table Expressions (CTEs) e Views no Snowflake
+
+Este documento explica o uso de Common Table Expressions (CTEs) e Views (incluindo Views Materializadas) no Snowflake, apresentando suas características e exemplos de código.
+
+---
+
+## Common Table Expressions (CTEs)
+
+CTEs são subconsultas nomeadas temporárias que você pode definir dentro de uma única instrução SQL (como `SELECT`, `INSERT`, `UPDATE` ou `DELETE`). Elas são definidas usando a palavra-chave `WITH`.
+
+### Características das CTEs
+
+* **Subconsultas Nomeadas/Tabelas Temporárias:** Permitem dar um nome a uma subconsulta complexa, tornando o código mais legível e autoexplicativo.
+* **Criação de Objeto Temporário:** Cria um objeto temporário que existe apenas para a duração da consulta principal e pode ser referenciado posteriormente.
+* **Redução de Dados:** Podem ajudar a reduzir a quantidade de dados que são consultados e/ou unidos, ao pré-filtrar ou agregar dados na CTE antes de operações mais complexas.
+* **Modularidade e Facilidade de Depuração:** Quebram consultas complexas em blocos lógicos menores, tornando-as mais fáceis de entender, manter e solucionar problemas.
+
+### Exemplo de Uso de CTE
+
+Este exemplo mostra como criar uma CTE chamada `premium_books` para filtrar livros com preço superior a 25.00 e, em seguida, usar essa CTE para calcular as avaliações mínimas e máximas por autor.
+
+```sql
+WITH premium_books AS (
+    SELECT
+        title,
+        author,
+        avg_reviews
+    FROM books
+    WHERE price > 25.00
+)
+SELECT
+    author,
+    MIN(avg_reviews) AS min_avg_reviews,
+    MAX(avg_reviews) AS max_avg_reviews
+FROM premium_books
+GROUP BY author;
+```
+### Criando Múltiplos Objetos Temporários com CTEs
+Você pode definir múltiplas CTEs em uma única cláusula WITH, separadas por vírgulas:
+
+``` SQL
+WITH
+    <first-name> AS (
+        SELECT
+            -- ...
+        FROM <table-name>
+        [JOIN | WHERE | ...]
+    ),
+    <second-name> AS (
+        -- ...
+    ),
+    -- ... outras CTEs
+SELECT
+    -- ...
+FROM <cte-name>; -- A CTE final pode se referir às anteriores
+```
+
+### Views no Snowflake
+Views são consultas SQL salvas que atuam como tabelas virtuais. Quando uma view é consultada, a consulta subjacente é executada, e os resultados são apresentados como se viessem de uma tabela real.
+
+Views Regulares (Não Materializadas)
+Execução da Consulta: A consulta subjacente à view é executada cada vez que a view é chamada. Os resultados não são armazenados fisicamente no disco.
+Definição Nomeada: É essencialmente uma "definição nomeada" de uma consulta, que simplifica consultas complexas e promove a reutilização.
+Exemplo de Criação e Uso de View Regular:
+``` SQL
+CREATE VIEW premium_books AS
+SELECT
+    title,
+    author,
+    avg_reviews
+FROM books
+WHERE price >= 25.00;
+
+-- Consultando a view
+SELECT * FROM premium_books;
+```
+### Views Materializadas (Materialized Views)
+- Resultados Armazenados: Ao contrário das views regulares, as views materializadas armazenam fisicamente os resultados da consulta no momento da sua criação e são mantidas atualizadas.
+- Melhor Desempenho de Consulta: Como os dados já estão pré-calculados e armazenados, consultar uma view materializada geralmente oferece um desempenho significativamente melhor do que consultar uma view regular ou a consulta subjacente diretamente.
+- Requer Atualização: Os resultados devem ser atualizados (refreshing) quando os dados da tabela base mudam para garantir que a view materializada esteja sincronizada. O Snowflake gerencia essa atualização automaticamente na maioria dos casos, mas há custos de computação associados.
+Exemplo de Criação e Uso de View Materializada:
+```SLQ
+CREATE MATERIALIZED VIEW premium_books AS
+SELECT
+    title,
+    author,
+    avg_reviews
+FROM books
+WHERE price >= 25.00;
+
+-- Consultando a view materializada
+SELECT * FROM premium_books;
+```
