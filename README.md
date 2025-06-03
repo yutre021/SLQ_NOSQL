@@ -1109,7 +1109,7 @@ FROM student;
 ```
 ### Explicação Detalhada do Código:
 
-* json_extract_path(parent_meta, 'jobs') AS jobs: Esta linha extrai o objeto (ou valor) associado à chave 'jobs' da coluna parent_meta. O resultado será do tipo jsonb.
+* *json_extract_path(parent_meta, 'jobs') AS jobs*: Esta linha extrai o objeto (ou valor) associado à chave 'jobs' da coluna parent_meta. O resultado será do tipo jsonb.
 * json_extract_path(parent_meta, 'jobs', 'P1') AS jobs_P1: Aqui, a função percorre o caminho: primeiro encontra a chave 'jobs', e dentro dela, a chave 'P1'. O valor final é retornado como jsonb.
 * json_extract_path(parent_meta, 'jobs', 'income') AS income: Similar ao anterior, extrai o valor de 'income' dentro de 'jobs', como jsonb.
 * json_extract_path_text(parent_meta, 'jobs', 'P2') AS jobs_P2: Esta é a aplicação de json_extract_path_text. Ela também percorre o caminho 'jobs' -> 'P2', mas retorna o valor final como text. Isso é ideal se P2 contém um valor escalar (ex: "tempo_integral", 50000, true) que você deseja usar diretamente como string.
