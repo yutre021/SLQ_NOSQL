@@ -296,7 +296,7 @@ SELECT * FROM premium_books;
 - Melhor Desempenho de Consulta: Como os dados já estão pré-calculados e armazenados, consultar uma view materializada geralmente oferece um desempenho significativamente melhor do que consultar uma view regular ou a consulta subjacente diretamente.
 - Requer Atualização: Os resultados devem ser atualizados (refreshing) quando os dados da tabela base mudam para garantir que a view materializada esteja sincronizada. O Snowflake gerencia essa atualização automaticamente na maioria dos casos, mas há custos de computação associados.
 Exemplo de Criação e Uso de View Materializada:
-```SLQ
+``` SQL
 CREATE MATERIALIZED VIEW premium_books AS
 SELECT
     title,
