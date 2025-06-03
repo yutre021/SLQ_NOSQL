@@ -311,3 +311,90 @@ WHERE price >= 25.00;
 -- Consultando a view materializada
 SELECT * FROM premium_books;
 ```
+
+# Fluxo de Trabalho de Análise com Snowflake: CTEs, Views e Views Materializadas
+
+Este `README.md` aborda ferramentas essenciais no Snowflake para construir fluxos de trabalho de análise de dados eficientes e organizados: Common Table Expressions (CTEs), Views Regulares e Views Materializadas.
+
+---
+
+## 1. Common Table Expressions (CTEs)
+
+CTEs são como "subconsultas nomeadas" temporárias que você define dentro de uma única instrução SQL (SELECT, INSERT, UPDATE, DELETE). Elas são introduzidas pela palavra-chave `WITH`.
+
+### O que são e para que servem?
+* **Objeto Temporário Nomeado:** Uma CTE permite nomear o resultado de uma consulta, que pode ser referenciado posteriormente dentro da mesma consulta principal. Pense nelas como tabelas temporárias que existem apenas durante a execução da query.
+* **Modularidade e Legibilidade:** Quebram consultas complexas em blocos lógicos menores e mais gerenciáveis, tornando o código SQL mais fácil de ler, entender e depurar.
+* **Reutilização Local:** O resultado de uma CTE pode ser usado múltiplas vezes na mesma query, evitando repetição de código e garantindo consistência.
+
+**Exemplo:**
+Imagine que você queira primeiro filtrar um conjunto de dados e depois realizar agregações sobre esse subconjunto. Uma CTE pode ajudar a organizar isso.
+
+```sql
+WITH VendasPorRegiao AS (
+    SELECT
+        regiao,
+        SUM(valor_venda) AS total_venda_regiao
+    FROM vendas
+    WHERE data_venda >= '2024-01-01'
+    GROUP BY regiao
+)
+SELECT
+    regiao,
+    total_venda_regiao
+FROM VendasPorRegiao
+WHERE total_venda_regiao > 100000;
+```
+
+### 2. Views Regulares (Não Materializadas)
+
+Uma View regular é uma consulta SQL salva no banco de dados com um nome. Ela funciona como uma "tabela virtual". Quando você consulta uma View regular, o banco de dados executa a consulta subjacente e retorna os resultados.
+
+* **O que são e para que servem?
+* Tabela Virtual: Não armazenam dados fisicamente. Em vez disso, são uma "definição nomeada" de uma consulta.
+* Execução "On-Demand": A consulta da View é executada toda vez que a View é referenciada (consultada).
+* Abstração e Simplificação: Ideais para abstrair a complexidade de consultas complexas ou JOINs, fornecendo uma interface mais simples para os usuários finais ou outras aplicações.
+* Segurança: Podem ser usadas para expor apenas um subconjunto de dados ou colunas a diferentes usuários, sem dar acesso total às tabelas subjacentes.
+Exemplo:
+Criar uma View para simplificar o acesso a dados de clientes ativos.
+```SQL
+CREATE VIEW ClientesAtivos AS
+SELECT
+    id_cliente,
+    nome,
+    email,
+    data_cadastro
+FROM clientes
+WHERE status = 'Ativo';
+
+-- Consultando a View
+SELECT * FROM ClientesAtivos WHERE data_cadastro > '2023-01-01';
+```
+
+### 3. Views Materializadas (Materialized Views)
+
+Uma View Materializada é semelhante a uma View regular, mas com uma diferença crucial: ela armazena os resultados da consulta fisicamente no disco.
+
+* **O que são e para que servem?
+* Resultados Armazenados Fisicamente: Os dados resultantes da consulta da View são pré-calculados e armazenados como se fossem uma tabela real.
+* Melhor Desempenho: Oferecem desempenho de consulta significativamente superior em comparação com Views regulares (e até mesmo consultas diretas em tabelas grandes), pois os dados já estão prontos para serem lidos. Isso é especialmente útil para relatórios e dashboards de Business Intelligence (BI) que são consultados frequentemente.
+* Requerem Atualização: Como os dados são armazenados, eles precisam ser atualizados (refrescados) quando os dados das tabelas base mudam. O Snowflake gerencia essa atualização automaticamente, mas pode haver custos de computação associados a esse processo.
+Exemplo:
+Criar uma View Materializada para um relatório de vendas diárias que é consultado várias vezes ao dia.
+```SQL
+CREATE MATERIALIZED VIEW VendasDiariasAgregadas AS
+SELECT
+    DATE_TRUNC('day', data_venda) AS dia_da_venda,
+    SUM(valor_venda) AS total_vendas
+FROM vendas
+GROUP BY dia_da_venda;
+
+-- Consultando a View Materializada (será muito rápida)
+SELECT * FROM VendasDiariasAgregadas WHERE dia_da_venda = CURRENT_DATE();
+```
+
+### Quando Usar Cada um?
+- CTEs: Use para simplificar consultas complexas dentro de uma única instrução SQL. São temporárias e não persistem no banco de dados.
+- Views Regulares: Use para abstrair a complexidade de consultas e criar objetos virtuais reutilizáveis, sem armazenamento físico de dados, ideal para quando os dados subjacentes mudam frequentemente e a latência de execução é aceitável.
+- Views Materializadas: Use para acelerar consultas em dados que não mudam extremamente rápido, onde o desempenho é crítico (ex: dashboards de BI). Envolvem custos de armazenamento e computação para manter os resultados atualizados.
+- A escolha entre essas ferramentas depende da sua necessidade de reusabilidade, desempenho, persistência e frequência de atualização dos dados.
