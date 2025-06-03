@@ -1051,12 +1051,17 @@ FROM student;
 Explicação Detalhada do Código:
 
 *parent_meta #> '{jobs}' AS jobs* : Este extrai o objeto ou valor associado à chave *jobs* (no nível superior de *parent_meta*) como um valor JSON. Se *jobs* for um objeto aninhado, ele o retornará como um objeto JSON.
+
 *parent_meta #> '{jobs, P1}' AS jobs_P1* : Aqui, o caminho *'{jobs, P1}'* indica que o operador deve primeiro encontrar a chave jobs e, dentro dela, encontrar a chave *P1*. O resultado será o valor associado a *P1* (ainda como JSON/JSONB, se for complexo).
+
 *parent_meta #> '{jobs, income}' AS income* : Similar ao anterior, extrai o valor de *income* dentro de *jobs*, também como JSON/JSONB.
+
 *parent_meta #>> '{jobs, P2}' AS jobs_P2* : Este é crucial. Ele usa *#>>* para extrair o valor de *P2* (que está dentro de jobs) diretamente como TEXTO. Isso é ideal se *P2* for um valor escalar como uma string, número ou booleano, e você quer o valor final pronto para uso em colunas de texto sem conversão adicional.
 
 Quando Usar *->/->>* vs. *#>/#>>`* :
 
 *->/->>* : Mais comuns para acesso a um único nível de aninhamento ou para o último passo de uma cadeia de extração com ->. A sintaxe é mais concisa para navegação passo a passo.
+
 *#>/#>>`*: Excelentes quando você tem o caminho completo para um elemento e quer acessá-lo diretamente, ou quando o caminho envolve arrays e você precisa especificar índices dentro do array no caminho.
+
 Dominar esses operadores é essencial para extrair e transformar dados de estruturas JSON complexas no PostgreSQL.
