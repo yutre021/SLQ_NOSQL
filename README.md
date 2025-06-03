@@ -999,3 +999,16 @@ data = pd.read_sql(query, db_engine)
 print(data)
 ```
 * Esta técnica é essencial para "achatar" dados semiestruturados em um formato tabular que é mais fácil de analisar, gerar relatórios ou carregar em outros sistemas que não suportam JSON nativamente. A capacidade de encadear operadores -> e ->> nos dá um controle granular sobre qual parte da estrutura aninhada queremos extrair e em qual formato. Isso é uma ferramenta poderosa para trabalhar com flexibilidade de esquema.
+
+```python
+# Build the query to select the rid and rating fields
+query = """
+SELECT
+	review -> 'statement' AS customer_review 
+FROM nested_reviews 
+WHERE review -> 'location' ->> 'branch' = 'Disneyland_California';
+"""
+# Execute the query, render results
+data = pd.read_sql(query, db_engine)
+print(data)
+```
