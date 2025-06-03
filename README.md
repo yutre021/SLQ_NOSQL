@@ -534,3 +534,18 @@ O Snowflake oferece suporte nativo a dados semiestruturados, o que permite flexi
 
 * Embora o JSON seja um formato comum de dados semiestruturados, ele não é um tipo de dado nativo do Snowflake. Os dados JSON são armazenados em colunas do tipo `VARIANT`.
 * O Snowflake fornece funções e operadores específicos para acessar e manipular dados dentro de colunas `VARIANT`, `OBJECT` e `ARRAY`.
+
+``` SQL
+# Build a query to pull city and country names
+query = """
+SELECT
+	city_meta:city,
+    city_meta:country
+FROM host_cities;
+"""
+
+
+# Execute query and output results
+results = conn.cursor().execute(query).fetch_pandas_all()
+print(results)
+```
