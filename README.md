@@ -516,3 +516,21 @@ Ambas as consultas resultariam em uma saída tabular, como a mostrada na imagem,
 * Flattening: Para estruturas mais complexas ou arrays onde você deseja "achatar" os dados em linhas separadas, o Snowflake fornece a função FLATTEN.
 * Tratamento de Nulos: Se um caminho especificado não existir nos dados JSON, a consulta retornará NULL para aquele campo, sem gerar um erro.
 * Dominar a consulta de dados semi-estruturados é crucial para aproveitar ao máximo a flexibilidade do Snowflake com diferentes tipos de dados.
+
+
+
+# Tipos de Dados Semiestruturados no Snowflake
+
+O Snowflake oferece suporte nativo a dados semiestruturados, o que permite flexibilidade no armazenamento e consulta de dados que não se encaixam rigidamente em um esquema relacional tradicional. Os principais tipos de dados usados para armazenar dados semiestruturados no Snowflake são:
+
+* **ARRAY**
+    * Usado para armazenar dados semiestruturados no formato de um *array* (lista ordenada de elementos). Os elementos dentro de um `ARRAY` podem ser de diferentes tipos de dados.
+* **OBJECT**
+    * Usado para armazenar dados semiestruturados no formato de um *objeto* (coleção não ordenada de pares chave-valor), semelhante a um dicionário ou mapa em outras linguagens.
+* **VARIANT**
+    * É um tipo de dado genérico que pode armazenar um valor de qualquer outro tipo de dados, incluindo `ARRAY`s e `OBJECT`s. `VARIANT` é o tipo de dado mais flexível e é frequentemente usado para carregar e trabalhar com dados semiestruturados, como JSON, XML, Avro, etc., no Snowflake.
+
+**Observações:**
+
+* Embora o JSON seja um formato comum de dados semiestruturados, ele não é um tipo de dado nativo do Snowflake. Os dados JSON são armazenados em colunas do tipo `VARIANT`.
+* O Snowflake fornece funções e operadores específicos para acessar e manipular dados dentro de colunas `VARIANT`, `OBJECT` e `ARRAY`.
