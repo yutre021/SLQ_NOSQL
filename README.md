@@ -782,3 +782,50 @@ print(results.head(10))
 * O results.head(10) é usado para mostrar apenas as primeiras 10 linhas do DataFrame resultante, o que é útil para verificar a saída sem sobrecarregar o console com muitos dados.
 
 * **Este processo é fundamental para integrar dados relacionais com sistemas que dependem fortemente do formato JSON, como APIs RESTful ou bancos de dados de documentos.
+
+
+## Extraindo Chaves Únicas de Objetos JSON em Colunas (PostgreSQL + Python/Pandas)
+
+Quando se trabalha com dados JSON semiestruturados, especialmente em um ambiente onde o esquema pode variar, é frequentemente útil inspecionar a estrutura dos objetos JSON e identificar quais chaves (ou campos) estão presentes. O PostgreSQL oferece uma função específica para isso: `json_object_keys()`.
+
+### Cenário: Descobrindo Chaves em uma Coluna de Avaliações Aninhadas
+
+Imagine que você tem uma tabela `nested_reviews` onde uma coluna chamada `review` armazena objetos JSON. Você pode querer saber quais são todas as chaves de nível superior que aparecem nesses objetos JSON para entender a estrutura dos seus dados.
+
+### O Código SQL: `json_object_keys()`
+
+A função `json_object_keys(<coluna_json>)` retorna um conjunto de chaves de nível superior de um objeto JSON. Combinando-a com `DISTINCT`, você pode obter uma lista única de todas as chaves presentes na coluna.
+
+```sql
+SELECT
+    DISTINCT json_object_keys(review)
+FROM nested_reviews;
+```
+
+Nesta query, o PostgreSQL irá iterar sobre os objetos JSON na coluna *review* da tabela *nested_reviews*, extrair todas as chaves de nível superior e, em seguida, retornar apenas as chaves únicas.
+
+Executando a Query com Python (Pandas & SQLAlchemy)
+Para executar essa query a partir de um script Python e visualizar os resultados, você usa a mesma abordagem de conexão e execução com Pandas e SQLAlchemy.
+
+``` SQL
+# Importa as bibliotecas necessárias
+import pandas as pd
+import sqlalchemy # Assumindo que db_engine já foi configurado com sqlalchemy
+
+# Constrói a query para encontrar as chaves únicas na coluna 'review'
+query = """
+SELECT
+    DISTINCT json_object_keys(review)
+FROM nested_reviews;
+"""
+
+# Executa a query e carrega os resultados em um DataFrame Pandas
+# 'db_engine' deve ser uma conexão SQLAlchemy previamente estabelecida
+unique_keys = pd.read_sql(query, db_engine)
+
+# Imprime o DataFrame com as chaves únicas
+print(unique_keys)
+```
+* O DataFrame *unique_keys* conterá uma coluna com todas as chaves distintas encontradas nos objetos JSON da coluna *review*.
+
+* Este método é uma ferramenta essencial para exploração e validação de esquema ao lidar com dados JSON flexíveis, ajudando a garantir que suas consultas considerem todas as variações de campos possíveis.
