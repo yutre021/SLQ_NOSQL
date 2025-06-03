@@ -897,3 +897,48 @@ query = """
 data = pd.read_sql(query, db_engine)
 print(data)
 ```
+
+
+## Determinando o Tipo de Dado de um Campo JSON (`json_typeof`)
+
+Ao trabalhar com dados JSON semiestruturados, especialmente em colunas `JSONB` no PostgreSQL, pode ser útil verificar o tipo de dado de um campo específico dentro de um objeto JSON. Isso é fundamental para validação, depuração ou para entender a estrutura real dos seus dados. A função `json_typeof()` é a ferramenta ideal para essa tarefa.
+
+### Cenário: Verificando o Tipo de Dado de um Campo 'location' Aninhado
+
+Considere uma tabela `nested_reviews` que possui uma coluna `review` contendo objetos JSON. Se você quer saber qual é o tipo de dado (string, number, boolean, object, array, null) do campo `location` dentro de cada objeto `review`, você pode usar `json_typeof()`.
+
+### O Código SQL: `json_typeof()` com `->`
+
+A função `json_typeof(<expressão_json>)` retorna o tipo JSON de um valor como texto. Para acessar um campo aninhado (como `location` dentro de `review`), você usará o operador `->`.
+
+```sql
+SELECT
+    json_typeof(review -> 'location') AS location_type
+FROM nested_reviews;
+```
+Nesta query, *review -> 'location'* primeiro extrai o valor do campo *location* do objeto JSON *review* (como JSONB). Em seguida, *json_typeof()* determina o tipo desse valor (ex: 'string', 'number', 'object', 'array', etc.) e o retorna em uma coluna nomeada *location_type*.
+
+Executando a Query com Python (Pandas & SQLAlchemy)
+Para executar essa query a partir de um script Python e exibir os resultados, você pode utilizar a combinação de *pandas* para a manipulação de dados e um *db_engine* (configurado com sqlalchemy) para a conexão com o banco de dados.
+``` SQL
+# Importa as bibliotecas necessárias
+import pandas as pd
+import sqlalchemy # Assumindo que db_engine já foi configurado com sqlalchemy
+
+# Constrói a query para encontrar o tipo de dado do campo 'location'
+query = """
+SELECT
+    json_typeof(review -> 'location') AS location_type
+FROM nested_reviews;
+"""
+
+# Executa a query e carrega os resultados em um DataFrame Pandas
+# 'db_engine' deve ser uma conexão SQLAlchemy previamente estabelecida
+data = pd.read_sql(query, db_engine)
+
+# Imprime o DataFrame com os tipos de dados encontrados
+print(data)
+```
+O DataFrame *data* conterá uma coluna *location_type* mostrando o tipo de dado JSON de cada *location* encontrado na coluna *review*.
+
+* Esta técnica é muito útil para entender a conformidade dos dados, identificar anomalias ou preparar dados JSON para transformações subsequentes.
