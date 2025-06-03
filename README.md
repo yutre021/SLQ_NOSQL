@@ -942,3 +942,60 @@ print(data)
 O DataFrame *data* conterá uma coluna *location_type* mostrando o tipo de dado JSON de cada *location* encontrado na coluna *review*.
 
 * Esta técnica é muito útil para entender a conformidade dos dados, identificar anomalias ou preparar dados JSON para transformações subsequentes.
+
+
+## Extraindo Campos JSON Aninhados Profundamente (PostgreSQL + Python/Pandas)
+
+Trabalhar com dados semiestruturados, especialmente JSON aninhado, é uma realidade comum em muitos sistemas. O PostgreSQL oferece operadores poderosos que nos permitem "percorrer" essas estruturas aninhadas e extrair valores específicos de forma eficiente.
+
+### O Desafio: Acessando Dados Aninhados
+
+Imagine que você tem uma coluna JSON (ou JSONB) onde os dados são estruturados com múltiplos níveis de aninhamento. Por exemplo, uma coluna `review` que contém um objeto, e dentro dele, um objeto `location`, que por sua vez contém campos como `branch` e `reviewer`. Para acessar `branch` e `reviewer` diretamente, precisamos de uma forma de navegar por essa hierarquia.
+
+### A Solução: Encadeamento de Operadores `->` e `->>`
+
+No PostgreSQL, podemos encadear os operadores de extração de JSON para perfurar objetos aninhados.
+
+* **`->` (Extração como JSON/JSONB):** Este operador é usado para navegar para o próximo nível de um objeto JSON. Ele retorna o valor do campo especificado como um tipo JSON (ou JSONB), o que é crucial para que possamos continuar a navegar em um nível mais profundo.
+* **`->>` (Extração como TEXTO):** Este operador é usado para extrair o valor final de um campo como uma string (TEXTO). Ele é geralmente o último operador em uma cadeia, quando o valor desejado é escalar (número, string, booleano, etc.).
+
+### O Código SQL: Perfurando o JSON
+
+A query abaixo demonstra como acessar os campos `branch` e `reviewer` que estão aninhados dentro do objeto `location`, que por sua vez está dentro do objeto `review`.
+
+```sql
+SELECT
+    review -> 'location' ->> 'branch' AS branch,
+    review -> 'location' ->> 'reviewer' AS reviewer
+FROM nested_reviews;
+```
+# Explicação da Query:
+
+- *review -> 'location'* : Primeiro, usamos *->* para extrair o objeto *location* da coluna *review*. O resultado dessa operação ainda é um tipo JSON/JSONB.
+- *... ->> 'branch'* : Em seguida, encadeamos outro operador. Como *branch* é o campo final que queremos extrair e presumimos que ele contém um valor escalar (como um nome de filial), usamos ->> para obtê-lo como texto.
+- O mesmo se aplica a *review -> 'location' ->> 'reviewer'* , que extrai o nome do revisor.
+- *AS branch* e *AS reviewer* : Atribuímos aliases legíveis para as colunas resultantes.
+  
+### Execução em Python com Pandas
+Para executar essa query e integrar os resultados em seu fluxo de trabalho de dados em Python, usamos a biblioteca Pandas, que se conecta ao banco de dados via um "engine" SQLAlchemy.
+
+```sql
+import pandas as pd
+import sqlalchemy # Certifique-se de que db_engine esteja configurado
+
+# Atualiza a query para selecionar os campos aninhados 'branch' e 'reviewer'
+query = """
+SELECT
+    review -> 'location' ->> 'branch' AS branch,
+    review -> 'location' ->> 'reviewer' AS reviewer
+FROM nested_reviews;
+"""
+
+# Executa a query e carrega os resultados em um DataFrame Pandas
+# 'db_engine' deve ser uma conexão SQLAlchemy previamente estabelecida
+data = pd.read_sql(query, db_engine)
+
+# Imprime o DataFrame resultante (exibindo os primeiros registros para verificação)
+print(data)
+```
+* Esta técnica é essencial para "achatar" dados semiestruturados em um formato tabular que é mais fácil de analisar, gerar relatórios ou carregar em outros sistemas que não suportam JSON nativamente. A capacidade de encadear operadores -> e ->> nos dá um controle granular sobre qual parte da estrutura aninhada queremos extrair e em qual formato. Isso é uma ferramenta poderosa para trabalhar com flexibilidade de esquema.
