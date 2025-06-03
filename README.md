@@ -1012,3 +1012,51 @@ WHERE review -> 'location' ->> 'branch' = 'Disneyland_California';
 data = pd.read_sql(query, db_engine)
 print(data)
 ```
+
+## Consultando Dados JSON com Caminhos Complexos: Operadores `#> ` e `#>>`
+
+No PostgreSQL, além dos operadores `->` e `->>` para acesso direto a campos JSON, temos os operadores `#> ` e `#>>` para acessar valores JSON por um caminho especificado por um array de strings. Estes são particularmente úteis para extrair dados de estruturas JSON aninhadas ou arrays quando você tem o "caminho" completo.
+
+### Entendendo os Operadores `#> ` e `#>>`
+
+Ambos os operadores trabalham com um "caminho" especificado como um array de strings (ex: `'{chave_pai, chave_filha, indice_array}'`).
+
+* **`#> ` (Extração de Elemento por Caminho como JSON/JSONB):**
+    * **Funcionalidade:** Este operador extrai um valor JSON de um objeto ou array pelo caminho especificado.
+    * **Entrada:** É chamado em uma coluna (do tipo JSON/JSONB) e recebe um *array de strings* que representa o caminho a ser percorrido.
+    * **Retorno:** Retorna o elemento JSON encontrado no caminho especificado como um tipo **JSON** (ou `jsonb`). Se o caminho não existir, retorna `NULL`. Este resultado pode ser encadeado com outros operadores JSON se o valor extraído for complexo (objeto ou array).
+
+* **`#>>` (Extração de Elemento por Caminho como TEXTO):**
+    * **Funcionalidade:** Semelhante a `#> `, ele também extrai um valor JSON de um objeto ou array pelo caminho especificado.
+    * **Entrada:** Também recebe uma coluna (JSON/JSONB) e um *array de strings* para o caminho.
+    * **Retorno:** A principal diferença é que ele retorna o elemento encontrado no caminho especificado como **TEXTO**. É ideal quando você sabe que o valor final é escalar (string, número, booleano, null) e deseja obtê-lo diretamente como uma string. Se o caminho não existir, retorna `NULL`.
+
+### Exemplo de Consulta: Acessando Dados por Caminho
+
+Considere uma coluna `parent_meta` que contém dados JSON, possivelmente com estruturas aninhadas representando "jobs", "income", "P1", "P2", etc.
+
+```sql
+SELECT
+    -- Extrai o objeto 'jobs' como JSON/JSONB
+    parent_meta #> '{jobs}' AS jobs,
+    -- Extrai o valor de 'P1' que está dentro de 'jobs' como JSON/JSONB
+    parent_meta #> '{jobs, P1}' AS jobs_P1,
+    -- Extrai o valor de 'income' que está dentro de 'jobs' como JSON/JSONB
+    parent_meta #> '{jobs, income}' AS income,
+    -- Extrai o valor de 'P2' que está dentro de 'jobs' como TEXTO
+    parent_meta #>> '{jobs, P2}' AS jobs_P2
+FROM student;
+```
+
+Explicação Detalhada do Código:
+
+*parent_meta #> '{jobs}' AS jobs* : Este extrai o objeto ou valor associado à chave *jobs* (no nível superior de *parent_meta*) como um valor JSON. Se *jobs* for um objeto aninhado, ele o retornará como um objeto JSON.
+*parent_meta #> '{jobs, P1}' AS jobs_P1* : Aqui, o caminho *'{jobs, P1}'* indica que o operador deve primeiro encontrar a chave jobs e, dentro dela, encontrar a chave *P1*. O resultado será o valor associado a *P1* (ainda como JSON/JSONB, se for complexo).
+*parent_meta #> '{jobs, income}' AS income* : Similar ao anterior, extrai o valor de *income* dentro de *jobs*, também como JSON/JSONB.
+*parent_meta #>> '{jobs, P2}' AS jobs_P2* : Este é crucial. Ele usa *#>>* para extrair o valor de *P2* (que está dentro de jobs) diretamente como TEXTO. Isso é ideal se *P2* for um valor escalar como uma string, número ou booleano, e você quer o valor final pronto para uso em colunas de texto sem conversão adicional.
+
+Quando Usar *->/->>* vs. *#>/#>>`* :
+
+*->/->>* : Mais comuns para acesso a um único nível de aninhamento ou para o último passo de uma cadeia de extração com ->. A sintaxe é mais concisa para navegação passo a passo.
+*#>/#>>`*: Excelentes quando você tem o caminho completo para um elemento e quer acessá-lo diretamente, ou quando o caminho envolve arrays e você precisa especificar índices dentro do array no caminho.
+Dominar esses operadores é essencial para extrair e transformar dados de estruturas JSON complexas no PostgreSQL.
