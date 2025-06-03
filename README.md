@@ -489,9 +489,9 @@ O Snowflake oferece diferentes sintaxes para acessar elementos dentro de estrutu
 Exemplo de Consulta:
 ``` SQL
 SELECT
-    library.ISBN_13,
-    library.size.dimensions,
-    library.size.weight
+    library:ISBN_13,
+    library:size.dimensions,
+    library:size.weight
 FROM books;
 ```
 ### 2. Usando Notação de Colchetes (Bracket Notation)
