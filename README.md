@@ -979,7 +979,7 @@ FROM nested_reviews;
 ### Execução em Python com Pandas
 Para executar essa query e integrar os resultados em seu fluxo de trabalho de dados em Python, usamos a biblioteca Pandas, que se conecta ao banco de dados via um "engine" SQLAlchemy.
 
-```sql
+```python
 import pandas as pd
 import sqlalchemy # Certifique-se de que db_engine esteja configurado
 
