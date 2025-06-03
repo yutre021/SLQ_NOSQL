@@ -441,3 +441,79 @@ As Views Materializadas são uma forma avançada de View que armazena fisicament
 | **Foco Principal** | Organização da consulta, abstração de lógica. | Desempenho de consulta, modularidade, manutenção.     |
 | **Execução** | Consulta subjacente executada a cada chamada. | Dados pré-computados; leitura direta da tabela materializada. |
 | **Custo/Benefício** | Sem custo de armazenamento extra; potencial de latência. | Melhor desempenho; custo de armazenamento e atualização. |
+
+
+
+
+# Consultando Dados Semi-Estruturados Aninhados no Snowflake
+
+Este documento explica como consultar dados semi-estruturados, como JSON, que são armazenados em colunas no Snowflake. O Snowflake oferece funcionalidades poderosas para navegar e extrair informações de estruturas aninhadas, como objetos e arrays.
+
+---
+
+## Cenário: Dados de Biblioteca Semi-Estruturados
+
+Imagine que você tenha uma tabela `books` (livros) que contém uma coluna chamada `library` (biblioteca) armazenando dados semi-estruturados no formato JSON, como no exemplo abaixo:
+
+```json
+[
+  {
+    "ISBN_13": "978-1685549596",
+    "publisher": "Notion Press Media",
+    "size": {
+      "dimensions": "8.5 x 1.01 x 11 inches",
+      "weight": "2.53 pounds"
+    }
+  },
+  {
+    "ISBN_13": "978-0596153939",
+    "publisher": "O'Reilly Media",
+    "size": {
+      "dimensions": "8 x 0.98 x 9.25 inches",
+      "weight": "1.96 pounds"
+    }
+  }
+]
+```
+Note que a coluna *library* contém um array de objetos, e dentro de cada objeto, o campo *size* é outro objeto aninhado.
+
+### Técnicas de Consulta
+
+O Snowflake oferece diferentes sintaxes para acessar elementos dentro de estruturas semi-estruturadas, dependendo da sua preferência ou da complexidade do caminho.
+
+### 1. Usando Notação de Ponto (Dot Notation)
+* A notação de ponto é geralmente mais legível e preferida para acessar elementos de objetos JSON, especialmente quando os nomes dos campos são identificadores SQL válidos (não contêm espaços, caracteres especiais ou começam com números).
+
+* Sintaxe: nome_da_coluna_json.nome_do_campo_json
+
+Exemplo de Consulta:
+
+''' SQL
+SELECT
+    library.ISBN_13,
+    library.size.dimensions,
+    library.size.weight
+FROM books;
+'''
+### 2. Usando Notação de Colchetes (Bracket Notation)
+* A notação de colchetes é mais flexível e necessária quando os nomes dos campos JSON contêm caracteres especiais, espaços ou são números. Também é útil para acessar elementos em arrays usando índices.
+
+* Sintaxe: nome_da_coluna_json['nome_do_campo_json']
+
+Exemplo de Consulta:
+
+``` SQL
+SELECT
+    library["ISBN_13"],
+    library["size"]["dimensions"],
+    library["size"]["weight"]
+FROM books;
+```
+Ambas as consultas resultariam em uma saída tabular, como a mostrada na imagem, desaninhando os campos *ISBN_13*, *dimensions* e *weight* em colunas separadas.
+
+### Observações Importantes:
+
+* Tipos de Dados: O Snowflake armazena dados semi-estruturados em um tipo de dado VARIANT, OBJECT ou ARRAY. Ao consultar, você pode precisar fazer um CAST explícito para o tipo de dado correto (ex: ::VARCHAR, ::NUMBER) para usar os dados em operações SQL regulares ou para garantir a tipagem correta na saída.
+* Flattening: Para estruturas mais complexas ou arrays onde você deseja "achatar" os dados em linhas separadas, o Snowflake fornece a função FLATTEN.
+* Tratamento de Nulos: Se um caminho especificado não existir nos dados JSON, a consulta retornará NULL para aquele campo, sem gerar um erro.
+* Dominar a consulta de dados semi-estruturados é crucial para aproveitar ao máximo a flexibilidade do Snowflake com diferentes tipos de dados.
