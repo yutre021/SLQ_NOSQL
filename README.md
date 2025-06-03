@@ -734,3 +734,51 @@ Neste exemplo, *parent_meta* é assumida como uma coluna contendo dados JSON/JSO
 Essas funções são ferramentas valiosas para manipular e entender a estrutura dos seus dados semiestruturados diretamente no SQL do PostgreSQL.
 
 ### *INSERT INTO* é usado para adicionar linhas a uma tabela do Postgres, enquanto o *COPY ... FROM* permite que todos os registros de um arquivo preencham uma tabela.
+
+------------------------------------------------------------
+
+### ## Criando Objetos JSON a partir de Dados Tabulares (PostgreSQL + Python/Pandas)
+
+Este exemplo demonstra como transformar dados de colunas tabulares em objetos JSON diretamente no PostgreSQL, e como executar essa consulta usando Python com as bibliotecas Pandas e SQLAlchemy.
+
+### Cenário: Convertendo Dados de Avaliações para JSON
+
+Imagine que você tenha uma tabela `reviews` com colunas como `review_id`, `rating` e `year_month`. Você pode querer consolidar essas informações em um único objeto JSON para armazenamento ou para uso em aplicações que consomem dados nesse formato.
+
+### O Código SQL: `row_to_json()`
+
+A função `row_to_json()` do PostgreSQL é perfeita para essa tarefa. Ela pega uma "linha" (criada pela função `row()`) e a converte em um objeto JSON, onde os nomes das colunas se tornam as chaves do objeto JSON.
+
+```sql
+SELECT
+    row_to_json(row(review_id, rating, year_month))
+FROM reviews;
+```
+
+Nesta query, para cada linha da tabela *reviews*, um objeto JSON será criado contendo as chaves *review_id*, *rating* e *year_month* com seus respectivos valores.
+
+Executando a Query com Python (Pandas & SQLAlchemy)
+Para executar essa query a partir de um script Python e visualizar os resultados, você pode usar a combinação de *sqlalchemy* para a conexão com o banco de dados e *pandas* para ler os resultados em um DataFrame.
+
+``` SQL
+# Importa as bibliotecas necessárias
+import pandas as pd
+import sqlalchemy # Assumindo que db_engine já foi configurado com sqlalchemy
+
+# Constrói a query para criar um objeto JSON a partir de colunas
+query = """
+SELECT
+    row_to_json(row(review_id, rating, year_month))
+FROM reviews;
+"""
+
+# Executa a query usando Pandas e o engine do banco de dados
+# 'db_engine' deve ser uma conexão SQLAlchemy previamente estabelecida
+results = pd.read_sql(query, db_engine)
+
+# Imprime as 10 primeiras linhas dos resultados para visualização
+print(results.head(10))
+```
+* O results.head(10) é usado para mostrar apenas as primeiras 10 linhas do DataFrame resultante, o que é útil para verificar a saída sem sobrecarregar o console com muitos dados.
+
+* **Este processo é fundamental para integrar dados relacionais com sistemas que dependem fortemente do formato JSON, como APIs RESTful ou bancos de dados de documentos.
