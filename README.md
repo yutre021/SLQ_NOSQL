@@ -198,3 +198,20 @@ O Snowflake utiliza conceitos avançados de armazenamento e otimização para ga
 * **Benefício:** Essa organização otimizada melhora drasticamente o desempenho das consultas. Quando uma consulta filtra dados com base nas chaves de clustering, o Snowflake pode usar os metadados das micropartições para "podar" (ignorar) rapidamente as micropartições que não contêm os dados relevantes, diminuindo a leitura de dados e acelerando a resposta da consulta.
 
 Esses mecanismos internos do Snowflake são fundamentais para sua capacidade de processar grandes cargas de trabalho analíticas com eficiência e escalabilidade.
+
+## Redução de Consultas com Microparticionamento no Snowflake
+
+O Snowflake utiliza suas **micropartições** para otimizar drasticamente o desempenho das consultas, especialmente aquelas com cláusulas `WHERE` que filtram grandes volumes de dados.
+
+Considere a seguinte consulta:
+
+```sql
+SELECT
+    team,
+    year,
+    sport,
+    event,
+    medal
+FROM olympic_medals
+WHERE year >= 2000;
+```
