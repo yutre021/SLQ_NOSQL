@@ -732,3 +732,5 @@ FROM <table-name>;
 Neste exemplo, *parent_meta* é assumida como uma coluna contendo dados JSON/JSONB. A consulta retornará uma lista distinta de todas as chaves (nomes dos campos) que aparecem nos objetos JSON na coluna *parent_meta* em sua tabela.
 
 Essas funções são ferramentas valiosas para manipular e entender a estrutura dos seus dados semiestruturados diretamente no SQL do PostgreSQL.
+
+### *INSERT INTO* é usado para adicionar linhas a uma tabela do Postgres, enquanto o *COPY ... FROM* permite que todos os registros de um arquivo preencham uma tabela.
