@@ -697,3 +697,38 @@ COPY students FROM 'students.csv' DELIMITER ',' CSV HEADER;
 Este comando importa dados do arquivo *students.csv* para a tabela *students*. As opções *DELIMITER ','* especificam que as colunas são separadas por vírgula, e *CSV HEADER*  indica que a primeira linha do arquivo contém os nomes das colunas e deve ser ignorada como dados.
 
 O comando *COPY FROM* é fundamental para operações de ETL (Extração, Transformação, Carregamento) no PostgreSQL, especialmente quando se lida com conjuntos de dados volumosos.
+
+## Transformações de Dados e Inspeção de JSON no PostgreSQL
+
+O PostgreSQL oferece funções poderosas para transformar dados tabulares em JSON e para inspecionar a estrutura de dados JSON existentes.
+
+### 1. Convertendo Linhas Tabulares para JSON (`row_to_json`)
+
+A função `row_to_json()` permite que você transforme uma linha (ou um conjunto de colunas de uma linha) de uma tabela em um objeto JSON. Isso é extremamente útil quando você precisa exportar dados tabulares em formato JSON ou preparar dados para serem armazenados em uma coluna JSON/JSONB.
+
+A função `row()` é usada para criar uma estrutura de "linha" a partir das colunas que você deseja incluir no JSON.
+
+**Exemplo:**
+
+```sql
+SELECT
+    row_to_json(row(
+        <column-1>,
+        <column-2>,
+        -- ... adicione outras colunas conforme necessário
+    )) AS json_output
+FROM <table-name>;
+```
+Este comando selecionará os valores de *<column-1>*, *<column-2>*, etc., de cada linha da *<table-name>* e os converterá em um objeto JSON, onde os nomes das colunas se tornarão as chaves do objeto JSON.
+
+### 2. Extraindo Chaves de Objetos JSON (json_object_keys)
+* Quando você trabalha com dados JSON semiestruturados, especialmente aqueles com esquemas variáveis, pode ser útil descobrir quais chaves existem em um objeto JSON. A função json_object_keys() faz exatamente isso, retornando um conjunto de todas as chaves de nível superior em um objeto JSON.
+
+Exemplo:
+``` SQL
+SELECT DISTINCT json_object_keys(parent_meta)
+FROM <table-name>;
+```
+Neste exemplo, *parent_meta* é assumida como uma coluna contendo dados JSON/JSONB. A consulta retornará uma lista distinta de todas as chaves (nomes dos campos) que aparecem nos objetos JSON na coluna *parent_meta* em sua tabela.
+
+Essas funções são ferramentas valiosas para manipular e entender a estrutura dos seus dados semiestruturados diretamente no SQL do PostgreSQL.
