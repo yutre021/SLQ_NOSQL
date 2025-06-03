@@ -1065,3 +1065,57 @@ Quando Usar *->/->>* vs. *#>/#>>`* :
 *#>/#>>`*: Excelentes quando você tem o caminho completo para um elemento e quer acessá-lo diretamente, ou quando o caminho envolve arrays e você precisa especificar índices dentro do array no caminho.
 
 Dominar esses operadores é essencial para extrair e transformar dados de estruturas JSON complexas no PostgreSQL.
+
+
+
+
+## Extraindo Dados JSON por Caminho: Funções `json_extract_path` e `json_extract_path_text`
+
+Além dos operadores `->`, `->>`, `#> ` e `#>>`, o PostgreSQL oferece as funções `json_extract_path()` e `json_extract_path_text()` para extrair valores de dados JSON/JSONB. Estas funções são particularmente úteis quando você deseja especificar o caminho para o elemento desejado como argumentos separados da função.
+
+### Entendendo `json_extract_path` e `json_extract_path_text`
+
+Ambas as funções permitem extrair um elemento JSON especificando seu caminho. A principal diferença entre elas reside no tipo de dado do valor retornado.
+
+* **`json_extract_path(<coluna_json>, 'caminho_parte_1', 'caminho_parte_2', ...)`**
+    * **Finalidade:** Extrai um elemento JSON do valor especificado pelo caminho fornecido.
+    * **Argumentos:** Recebe a coluna JSON/JSONB e uma lista arbitrária de campos (strings) que definem o caminho para o elemento desejado. Cada string é um passo na hierarquia JSON.
+    * **Retorno:** Retorna o elemento extraído como um valor do tipo **`jsonb`**. Isso significa que se o elemento extraído for um objeto ou array JSON, ele será retornado em seu formato JSON, permitindo que você continue processando-o com outras funções JSON.
+    * **Caminho Inexistente:** Se o caminho especificado não existir nos dados JSON, a função retorna `NULL`.
+
+* **`json_extract_path_text(<coluna_json>, 'caminho_parte_1', 'caminho_parte_2', ...)`**
+    * **Finalidade:** Semelhante a `json_extract_path`, mas otimizada para valores escalares.
+    * **Argumentos:** Também recebe a coluna JSON/JSONB e uma lista de strings para o caminho.
+    * **Retorno:** Retorna o elemento extraído como um valor do tipo **`text`**. Isso é ideal quando você sabe que o valor final é uma string, número, booleano ou null, e você quer esse valor como uma string simples para uso imediato em outras operações de texto ou para exibição.
+
+### Exemplo de Consulta: Extraindo Dados de `parent_meta`
+
+Considere uma coluna `parent_meta` com dados JSON aninhados. O exemplo abaixo demonstra como usar essas funções para extrair diferentes níveis de informação:
+
+```sql
+SELECT
+    -- Extrai o objeto 'jobs' do nível superior como JSONB
+    json_extract_path(parent_meta, 'jobs') AS jobs,
+    
+    -- Extrai o valor de 'P1' que está dentro de 'jobs' como JSONB
+    json_extract_path(parent_meta, 'jobs', 'P1') AS jobs_P1,
+    
+    -- Extrai o valor de 'income' que está dentro de 'jobs' como JSONB
+    json_extract_path(parent_meta, 'jobs', 'income') AS income,
+    
+    -- Extrai o valor de 'P2' que está dentro de 'jobs' como TEXTO
+    json_extract_path_text(parent_meta, 'jobs', 'P2') AS jobs_P2
+FROM student;
+```
+### Explicação Detalhada do Código:
+
+* json_extract_path(parent_meta, 'jobs') AS jobs: Esta linha extrai o objeto (ou valor) associado à chave 'jobs' da coluna parent_meta. O resultado será do tipo jsonb.
+* json_extract_path(parent_meta, 'jobs', 'P1') AS jobs_P1: Aqui, a função percorre o caminho: primeiro encontra a chave 'jobs', e dentro dela, a chave 'P1'. O valor final é retornado como jsonb.
+* json_extract_path(parent_meta, 'jobs', 'income') AS income: Similar ao anterior, extrai o valor de 'income' dentro de 'jobs', como jsonb.
+* json_extract_path_text(parent_meta, 'jobs', 'P2') AS jobs_P2: Esta é a aplicação de json_extract_path_text. Ela também percorre o caminho 'jobs' -> 'P2', mas retorna o valor final como text. Isso é ideal se P2 contém um valor escalar (ex: "tempo_integral", 50000, true) que você deseja usar diretamente como string.
+# Comparativo: Operadores vs. Funções json_extract_path
+* Operadores (->, ->>, #>, #>>): Mais concisos e diretos, úteis para acesso sequencial ou quando o caminho é fixo e conhecido.
+* Funções json_extract_path: Podem ser úteis para construir caminhos dinamicamente a partir de variáveis ou para casos onde a clareza do caminho como argumentos separados é preferível.
+
+
+A escolha entre operadores e funções json_extract_path geralmente depende da preferência pessoal, legibilidade do código e da complexidade do caminho que precisa ser extraído.
