@@ -398,3 +398,46 @@ SELECT * FROM VendasDiariasAgregadas WHERE dia_da_venda = CURRENT_DATE();
 - Views Regulares: Use para abstrair a complexidade de consultas e criar objetos virtuais reutilizáveis, sem armazenamento físico de dados, ideal para quando os dados subjacentes mudam frequentemente e a latência de execução é aceitável.
 - Views Materializadas: Use para acelerar consultas em dados que não mudam extremamente rápido, onde o desempenho é crítico (ex: dashboards de BI). Envolvem custos de armazenamento e computação para manter os resultados atualizados.
 - A escolha entre essas ferramentas depende da sua necessidade de reusabilidade, desempenho, persistência e frequência de atualização dos dados.
+
+
+# Views no Snowflake: Materializadas vs. Não Materializadas
+
+Este documento detalha as diferenças entre Views Não Materializadas (Regulares) e Views Materializadas no Snowflake, explicando suas características principais, benefícios e custos associados.
+
+---
+
+## Views Não Materializadas (Regular VIEW)
+
+As Views Não Materializadas, frequentemente chamadas de "Views Regulares", são consultas SQL salvas que atuam como tabelas virtuais.
+
+### Características Principais:
+
+* **Definição:** São criadas usando a sintaxe `CREATE [OR REPLACE] VIEW`.
+* **Armazenamento de Dados:** **Não armazenam dados em uma tabela quando definidas.** Em vez disso, elas armazenam apenas a "definição nomeada" da consulta SQL subjacente.
+* **Foco:** Seu principal objetivo é **ajudar na organização da consulta** e na abstração da lógica complexa, em vez de focar no desempenho bruto da leitura de dados.
+* **Execução:** A consulta subjacente é executada toda vez que a View é consultada.
+
+---
+
+## Views Materializadas (Materialized VIEW)
+
+As Views Materializadas são uma forma avançada de View que armazena fisicamente os resultados da consulta.
+
+### Características Principais:
+
+* **Definição:** São criadas usando a sintaxe `CREATE [OR REPLACE] MATERIALIZED VIEW`.
+* **Armazenamento de Dados:** **Armazenam os resultados de uma consulta em uma tabela** após a sua definição. Isso significa que os dados são pré-computados e persistem no disco.
+* **Foco:** O principal benefício é a **melhora no desempenho da consulta**, pois os dados já estão prontos para serem lidos. Contribuem também para a modularidade e facilidade de manutenção de fluxos de dados complexos.
+* **Custo da Recenteza:** A vantagem de desempenho vem ao custo da "recenteza" dos dados. Os dados na View Materializada precisam ser atualizados (ou "refrescados") para refletir as alterações nas tabelas base. O Snowflake gerencia essa atualização automaticamente, mas há um custo de computação associado.
+
+---
+
+## Comparativo Direto
+
+| Característica             | View Não Materializada                       | View Materializada                                    |
+| :------------------------- | :------------------------------------------- | :---------------------------------------------------- |
+| **Sintaxe de Criação** | `CREATE [OR REPLACE] VIEW`                   | `CREATE [OR REPLACE] MATERIALIZED VIEW`               |
+| **Armazenamento de Dados** | Não armazena dados; armazena a definição.    | Armazena os resultados da consulta em uma tabela.     |
+| **Foco Principal** | Organização da consulta, abstração de lógica. | Desempenho de consulta, modularidade, manutenção.     |
+| **Execução** | Consulta subjacente executada a cada chamada. | Dados pré-computados; leitura direta da tabela materializada. |
+| **Custo/Benefício** | Sem custo de armazenamento extra; potencial de latência. | Melhor desempenho; custo de armazenamento e atualização. |
