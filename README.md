@@ -883,3 +883,17 @@ FROM <table-name>;
 - Arrays: Ilustra como usar índices numéricos com *->* ou *->>* para acessar elementos dentro de arrays JSON.
 - Type of (*json_typeof*): A função *json_typeof()* é útil para inspecionar o tipo de dado de um valor dentro do JSON (string, number, boolean, object, array, null), auxiliando na depuração e validação do esquema.
 - A escolha entre *->* e *->>* depende se você pretende continuar processando o elemento extraído como JSON (necessário para encadeamento ou para passar para outras funções JSON) ou se você precisa do valor final como um texto simples.
+
+``` SQL
+# Build the query to select the review_id and rating fields
+query = """
+	SELECT 
+    	review -> 'location' AS location, 
+        review ->> 'statement' AS statement 
+    FROM nested_reviews;
+"""
+
+# Execute the query, render results
+data = pd.read_sql(query, db_engine)
+print(data)
+```
