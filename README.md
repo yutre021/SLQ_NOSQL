@@ -487,14 +487,13 @@ O Snowflake oferece diferentes sintaxes para acessar elementos dentro de estrutu
 * Sintaxe: nome_da_coluna_json.nome_do_campo_json
 
 Exemplo de Consulta:
-
-''' SQL
+``` SQL
 SELECT
     library.ISBN_13,
     library.size.dimensions,
     library.size.weight
 FROM books;
-'''
+```
 ### 2. Usando Notação de Colchetes (Bracket Notation)
 * A notação de colchetes é mais flexível e necessária quando os nomes dos campos JSON contêm caracteres especiais, espaços ou são números. Também é útil para acessar elementos em arrays usando índices.
 
