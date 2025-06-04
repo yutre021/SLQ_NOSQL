@@ -1246,3 +1246,17 @@ São bancos de dados NoSQL que armazenam dados em documentos, que são estrutura
 | **Forma de Consulta** | Apenas por chave (acesso direto)                  | Direta em campos dentro do documento (mais flexível) |
 | **Armazenamento Padrão** | Principalmente na memória (para velocidade)       | Principalmente no disco (para volume)                |
 | **Casos de Uso Típicos** | Cache, gerenciamento de sessões, filas rápidas    | Catálogos, perfis de usuário, CMS, IoT             |
+
+
+#Exemplo de Redis conexão
+```sql
+import redis
+
+# Create a connection to Redis cluster
+r = redis.Redis(
+  	host="localhost",
+    port=6379,
+    decode_responses=True
+  )
+
+```
