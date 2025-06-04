@@ -1378,3 +1378,59 @@ None
 Isso é um comportamento padrão e seguro, permitindo que seu código verifique facilmente a existência de uma chave.
 
 Com o *.get()*, o Redis mantém a promessa de operações de leitura e escrita simples e de alta velocidade, tornando-o uma ferramenta essencial para muitas aplicações.
+
+
+
+## Armazenando Dados Chave-Valor Complexos (Hashes) com Redis
+
+Além de pares simples de chave-valor (onde o valor é uma string), o Redis é muito poderoso por suportar tipos de dados mais complexos diretamente. Um dos mais úteis é o tipo **Hash**, que permite armazenar um dicionário (ou mapa) de campos e valores sob uma única chave.
+
+Pense nisso como ter uma chave principal (ex: `"shopping_cart"`) que, em vez de apontar para uma única string, aponta para um "mini-dicionário" dentro do Redis.
+
+### 1. Armazenando um Dicionário (Hash) Usando `.hset()`
+
+Para armazenar um dicionário em Redis, você usa o método `.hset()`. Este método é específico para o tipo Hash do Redis.
+
+```python
+# Supondo que 'r' é uma conexão Redis ativa (r = redis.Redis(...))
+
+# Armazena um dicionário usando .hset()
+r.hset(
+    "shopping_cart", # Esta é a chave principal do seu Hash no Redis
+    mapping={        # 'mapping' recebe o dicionário Python
+        "item_id": "1003",
+        "quantity": 2,
+        "price": 79.99
+    }
+)
+```
+
+## Explicação:
+
+- *"shopping_cart"*: É a chave que identifica este conjunto de dados Hash no Redis.
+
+- *mapping={...}*: Você passa um dicionário Python diretamente para o argumento *mapping*. O Redis irá armazenar cada chave-valor dentro deste dicionário como um campo-valor do Hash *shopping_cart*.
+
+### 2. Recuperando o Dicionário (Hash) Usando **.hgetall()**
+- Para recuperar todos os campos e seus valores de um Hash armazenado sob uma chave específica, você usa o método *.hgetall()*.
+
+```python
+# Recupera o dicionário completo associado à chave "shopping_cart"
+shopping_cart_data = r.hgetall("shopping_cart")
+
+# Imprime o dicionário recuperado
+print(shopping_cart_data)
+```
+
+Resultado Esperado:
+
+```
+{b'item_id': b'1003', b'quantity': b'2', b'price': b'79.99'}
+```
+
+Observação:
+
+Assim como com *.get()*, os valores (chaves e valores do dicionário) são retornados como bytes pelo Redis. Você precisará decodificá-los para strings em Python (ex: *shopping_cart_data[b'item_id'].decode('utf-8')*).
+
+O tipo Hash do Redis é ideal para armazenar objetos com múltiplas propriedades (como um perfil de usuário, detalhes de um produto ou, como no exemplo, um carrinho de compras), permitindo que você recupere o objeto completo com uma única operação.
+
