@@ -1307,3 +1307,74 @@ r.set("username", "BSmith")
 ```
 
 Essa simplicidade de armazenamento e sobrescrita faz do Redis uma ferramenta extremamente eficiente para dados que precisam ser acessados e modificados rapidamente.
+
+
+## Recuperando Dados Chave-Valor com Redis em Python
+
+Após armazenar dados no Redis, a operação de recuperar um valor por sua chave é igualmente simples e rápida, utilizando o método `.get()`. É importante entender como o Redis lida com chaves existentes, sobrescritas e inexistentes.
+
+### 1. Recuperando um Par Chave-Valor Existente
+
+Para obter o valor associado a uma chave, basta passar a chave como argumento para o método `.get()`.
+
+```python
+# Supondo que 'r' é uma conexão Redis ativa (r = redis.Redis(...))
+
+# Armazena um par chave-valor para demonstração
+r.set("username", "JDoe")
+
+# Recupera o valor associado à chave 'username'
+username = r.get("username")
+
+# Imprime o resultado
+print(username)
+```
+Resultado Esperado:
+
+```
+b'JDoe'
+```
+
+### Observação: O Redis retorna os valores como bytes (prefixo *b'*), então você pode precisar decodificá-los para string em Python (ex: *username.decode('utf-8')*).
+
+2. Recuperando um Par Chave-Valor Após Sobrescrita
+   
+Se uma chave é sobrescrita (usando *.set()* novamente com a mesma chave), o *.get()* sempre retornará o valor mais recente.
+
+```python
+# Sobrescreve a chave 'username' com um novo valor
+r.set("username", "BSmith")
+
+# Recupera o valor atualizado para a chave 'username'
+username = r.get("username")
+
+# Imprime o resultado
+print(username)
+```
+
+Resultado Esperado:
+
+```
+b'BSmith'
+```
+
+### 3. Tentando Acessar uma Chave que Não Existe
+
+Quando você tenta recuperar um valor para uma chave que não foi armazenada no Redis, o método *.get()* retorna *None* (nulo em Python), indicando que a chave não foi encontrada.
+
+```python
+# Tenta acessar uma chave que não existe no Redis
+favorite_color = r.get("favorite_color")
+
+# Imprime o resultado
+print(favorite_color)
+```
+Resultado Esperado:
+
+```
+None
+```
+
+Isso é um comportamento padrão e seguro, permitindo que seu código verifique facilmente a existência de uma chave.
+
+Com o *.get()*, o Redis mantém a promessa de operações de leitura e escrita simples e de alta velocidade, tornando-o uma ferramenta essencial para muitas aplicações.
