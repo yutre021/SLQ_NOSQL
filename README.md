@@ -1147,3 +1147,20 @@ Para consultar dados JSON aninhados no PostgreSQL, você tem duas famílias prin
 * Use `#> `/#>>` quando você já sabe o caminho completo para o elemento que deseja extrair, o que pode tornar a consulta mais concisa para caminhos profundos, ou quando o caminho envolve o acesso a elementos de array por índice.
 
 Ambas as famílias de operadores são cruciais para trabalhar com dados JSON aninhados no PostgreSQL, permitindo que você extraia informações de forma flexível e eficiente.
+
+#Exemplo
+```sql
+# Attempt to query the statement, nested branch, and nested
+# zipcode fields from the review column
+query = """
+	SELECT 
+    	json_typeof(review #> '{statement}'),
+        review #>> '{location, branch}' AS branch,
+        review #>> '{location, zipcode}' AS zipcode
+    FROM nested_reviews;
+"""
+
+# Execute the query, render results
+data = pd.read_sql(query, db_engine)
+print(data)
+```
