@@ -1260,3 +1260,50 @@ r = redis.Redis(
   )
 
 ```
+## Armazenando Dados Chave-Valor com Redis em Python
+
+Redis é um banco de dados chave-valor em memória extremamente rápido e versátil. Ele é amplamente utilizado para caching, gerenciamento de sessões e como um broker de mensagens, entre outras coisas. Trabalhar com Redis em Python é direto e intuitivo.
+
+### Conectando e Armazenando Dados
+
+Para começar a usar o Redis em Python, você precisa importar a biblioteca `redis` e criar uma instância de conexão. Após estabelecer a conexão, você pode usar o método `.set()` para armazenar pares de chave-valor.
+
+**1. Importar e Conectar ao Redis:**
+
+Primeiro, importe a biblioteca `redis` e crie um objeto de conexão.
+*(Assumindo que você já tenha o pacote `redis` instalado: `pip install redis`)*
+
+```python
+import redis
+
+# Faz uma conexão ao servidor Redis
+# Substitua 'localhost' e 6379 pelos dados do seu servidor Redis, se necessário
+r = redis.Redis(host='localhost', port=6379, db=0)
+```
+### 2. Armazenar um Par Chave-Valor:
+
+```python
+O método .set() é usado para armazenar um valor associado a uma chave.
+# Armazena um par chave-valor: 'username' com o valor 'JDoe'
+r.set("username", "JDoe")
+
+# Armazena outro par chave-valor: 'age' com o valor 27
+r.set("age", 27)
+```
+
+### Pontos Importantes ao Armazenar Dados:
+
+Você passa a chave e o valor diretamente para o método .set().
+
+O Redis armazena os valores como strings. Isso significa que, mesmo que você passe tipos nativos do Python como int ou float, eles serão convertidos e armazenados como strings no Redis. Ao recuperar, você pode precisar convertê-los de volta para o tipo desejado em seu código Python.
+
+### 3. Sobrescrever uma Chave Existente:
+
+Se você usar o método .set() com uma chave que já existe, o valor antigo será sobrescrito pelo novo valor.
+
+```python
+# Sobrescreve a chave existente 'username' com um novo valor 'BSmith'
+r.set("username", "BSmith")
+```
+
+Essa simplicidade de armazenamento e sobrescrita faz do Redis uma ferramenta extremamente eficiente para dados que precisam ser acessados e modificados rapidamente.
