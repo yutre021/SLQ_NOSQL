@@ -1164,3 +1164,26 @@ query = """
 data = pd.read_sql(query, db_engine)
 print(data)
 ```
+
+## Bancos de Dados Chave-Valor (Key-Value Databases)
+
+Bancos de dados chave-valor representam um dos tipos mais fundamentais de bancos de dados NoSQL. Eles são projetados para armazenar e recuperar dados de forma simples e eficiente, similar à forma como dicionários funcionam em Python ou tabelas hash em outras linguagens de programação.
+
+### Definição e Características Principais:
+
+* **Definição:** Um banco de dados NoSQL que armazena dados em pares simples de chave-valor. Cada chave é única e aponta para um valor.
+* **Modelo de Pesquisa:** A pesquisa de dados é realizada **exclusivamente pela chave**. Não é possível pesquisar diretamente pelo valor armazenado sem antes conhecer a chave.
+* **Tipos de Valores:** Embora o conceito básico seja um valor associado a uma chave, muitos bancos de dados chave-valor modernos, como o Redis (mencionado na fonte), suportam tipos de valores mais complexos além de simples strings, como hashes, listas, conjuntos (sets) e conjuntos ordenados (sorted sets).
+* **Performance:** São extremamente performáticos para operações de **leitura e escrita simples** de dados (GET/SET), tornando-os ideais para cenários que exigem baixa latência.
+* **Armazenamento:** Muitos dos bancos de dados chave-valor de alto desempenho (como o Redis) armazenam seus dados **na memória** (RAM) para garantir acesso ultrarrápido, embora possam ter mecanismos de persistência para salvar os dados no disco.
+
+### Exemplo Simples:
+
+Imagine que você armazene a condição do tempo:
+
+* **Chave:** `"weather"`
+* **Valor:** `"sunny"`
+
+Para recuperar o valor, você simplesmente solicita a chave `"weather"`, e o banco de dados retorna `"sunny"`.
+
+Bancos de dados chave-valor são amplamente utilizados para caching, gerenciamento de sessões, filas de mensagens e qualquer aplicação que exija acesso rápido a grandes volumes de dados.
