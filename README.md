@@ -1216,3 +1216,33 @@ Você verá bancos de dados chave-valor sendo muito usados em:
 * **Não são para dados relacionais complexos:** Se você precisa de tabelas com muitos relacionamentos entre si (como clientes que fazem pedidos, que têm produtos), onde você faz `JOIN`s complexos, um banco de dados chave-valor não é a melhor escolha. Para isso, você usaria um RDBMS como PostgreSQL ou MySQL.
 
 Em resumo, para um desenvolvedor iniciante, bancos de dados chave-valor são a ferramenta ideal quando você precisa de velocidade extrema para guardar e recuperar dados simples, sabendo a chave, e não precisa de relações complexas entre os dados.
+
+## Comparativo: Bancos de Dados de Valores-Chave vs. Bancos de Dados de Documentos
+
+No universo NoSQL, bancos de dados de valores-chave e bancos de dados de documentos são duas categorias populares, cada uma com características e casos de uso distintos.
+
+### Bancos de Dados de Valores-Chave (Key-Value Databases)
+
+São a forma mais simples de banco de dados NoSQL, armazenando dados como pares de chave-valor. Pense neles como um grande dicionário.
+
+* **Recuperação por Chave:** A principal característica é que os valores só podem ser recuperados **por meio de consulta à chave**. Isso leva a **operações de leitura e gravação extremamente rápidas**, pois o sistema não precisa processar estruturas complexas ou índices secundários para acesso direto.
+* **Armazenamento em Memória:** **Normalmente, armazenam dados na memória (RAM)**, em vez de diretamente no disco. Isso contribui significativamente para sua alta performance e baixa latência. Muitos possuem mecanismos para persistir os dados no disco para recuperação após reinícios.
+* **Casos de Uso Comuns:** São comumente usados para **armazenamento em cache** (guardar dados frequentemente acessados para leitura rápida) ou **gerenciamento de sessões** em aplicativos da Web, onde a velocidade e a simplicidade são cruciais.
+
+### Bancos de Dados de Documentos (Document Databases)
+
+São bancos de dados NoSQL que armazenam dados em documentos, que são estruturas flexíveis e auto-descritivas (geralmente JSON, BSON, XML). Pense neles como um arquivo digital que contém todas as informações sobre uma entidade.
+
+* **Consulta Direta de Documentos:** Os valores armazenados nos documentos (os próprios documentos) **podem ser consultados diretamente**. Isso significa que você pode fazer consultas mais complexas, buscando por campos dentro do documento sem precisar saber a chave exata do documento principal. Eles suportam indexação de campos dentro dos documentos.
+* **Armazenamento em Disco:** Ao contrário de muitos bancos de dados chave-valor que priorizam a memória, os bancos de dados de documentos **normalmente armazenam os dados no disco**, o que os torna mais adequados para grandes volumes de dados que não caberiam totalmente na memória. Embora usem disco, eles ainda são projetados para alto desempenho e escalabilidade.
+
+---
+
+**Em Resumo:**
+
+| Característica             | Bancos de Dados de Valores-Chave                  | Bancos de Dados de Documentos                        |
+| :------------------------- | :------------------------------------------------ | :--------------------------------------------------- |
+| **Modelo de Dados** | Par chave-valor simples                           | Documentos (JSON, BSON, etc.)                       |
+| **Forma de Consulta** | Apenas por chave (acesso direto)                  | Direta em campos dentro do documento (mais flexível) |
+| **Armazenamento Padrão** | Principalmente na memória (para velocidade)       | Principalmente no disco (para volume)                |
+| **Casos de Uso Típicos** | Cache, gerenciamento de sessões, filas rápidas    | Catálogos, perfis de usuário, CMS, IoT             |
