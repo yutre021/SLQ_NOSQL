@@ -1119,3 +1119,31 @@ FROM student;
 
 
 A escolha entre operadores e funções json_extract_path geralmente depende da preferência pessoal, legibilidade do código e da complexidade do caminho que precisa ser extraído.
+
+## Operadores de Consulta JSON no PostgreSQL: `->`/`->>` (Seta) vs. `#> `/#>>` (Seta de Hash)
+
+Para consultar dados JSON aninhados no PostgreSQL, você tem duas famílias principais de operadores, cada uma com suas características e usos ideais:
+
+
+### Operadores de Seta (`->` / `->>`)
+
+* **Finalidade:** Usados para extrair campos de objetos JSON ou elementos de arrays JSON.
+* **Encadeamento:** Podem ser **encadeados** para navegar por múltiplos níveis de aninhamento em um documento JSON (ex: `coluna -> 'nivel1' ->> 'campo_final'`). Embora eficaz, a instrução SQL pode se tornar **longa** e menos legível para caminhos muito profundos.
+* **Resultados:**
+    * `->`: Retorna o elemento extraído como **JSONB** (útil para continuar a navegar em estruturas aninhadas).
+    * `->>`: Retorna o elemento extraído como **TEXTO** (ideal para valores escalares finais).
+
+### Operadores de Seta de Hash (`#> ` / `#>>`)
+
+* **Finalidade:** Usados para extrair campos de objetos JSON ou elementos de arrays JSON especificando um **caminho completo**.
+* **Caminho como Array:** Uma **coluna é fornecida junto com uma matriz de strings** (literal de array de texto, ex: `'{chave_pai, chave_filha, indice_array}'`), especificando o caminho completo para o campo a ser consultado.
+* **Resultados:**
+    * `#> `: Retorna o elemento extraído como **JSONB**.
+    * `#>>`: Retorna o elemento extraído como **TEXTO**.
+
+### Quando Usar Qual:
+
+* Use `->`/`->>` para navegação passo a passo, especialmente quando você está construindo a consulta sequencialmente ou precisa de um controle mais granular a cada nível.
+* Use `#> `/#>>` quando você já sabe o caminho completo para o elemento que deseja extrair, o que pode tornar a consulta mais concisa para caminhos profundos, ou quando o caminho envolve o acesso a elementos de array por índice.
+
+Ambas as famílias de operadores são cruciais para trabalhar com dados JSON aninhados no PostgreSQL, permitindo que você extraia informações de forma flexível e eficiente.
