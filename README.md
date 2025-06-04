@@ -1434,3 +1434,18 @@ Assim como com *.get()*, os valores (chaves e valores do dicionário) são retor
 
 O tipo Hash do Redis é ideal para armazenar objetos com múltiplas propriedades (como um perfil de usuário, detalhes de um produto ou, como no exemplo, um carrinho de compras), permitindo que você recupere o objeto completo com uma única operação.
 
+```sql
+# Store the city key-value pair
+redis_conn.set("city", "London")
+
+# Store the sunshine key-value pair
+redis_conn.set("sunshine", "7")
+
+# Retrieve values stored at the city and sunshine keys
+city = redis_conn.get("city")
+sunshine = redis_conn.get("sunshine")
+
+print(city)
+print(sunshine)
+```
+
